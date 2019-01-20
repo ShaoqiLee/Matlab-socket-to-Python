@@ -31,8 +31,27 @@ while i <= s.bytes
     else
         fwrite(tcpipServer,rsdata(i:i+buffersize-1),'uint8');%image
     end
-    %recv = fread(tcpipServer,1,'uchar');%concurrent
     i=i+buffersize;
 end
 %
+
+%%% receive image from python
+i=1;
+img=[];
+%
+while i <= s.bytes
+    if i+buffersize-1 >= s.bytes
+        img = [img;fread(tcpipServer,s.bytes-i+1,'uint8')];%image
+    else
+        img = [img;fread(tcpipServer,buffersize,'uint8')];%image
+    end
+    i=i+buffersize;
+end
+%}
+rsimg = reshape(img,[s.size(1),s.size(2),s.size(3)]);
+imwrite(uint8(rsimg),'matlab_receive.jpg')
+
+
 fclose(tcpipServer);
+
+
